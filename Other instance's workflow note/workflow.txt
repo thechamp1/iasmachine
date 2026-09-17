@@ -1,0 +1,9 @@
+What exists now: a working, source-verified core — discrete-event engine, the Gate-Clear Sequencing Chain (all four operations, Carry Delay wired correctly), the 40-stage Adder, and a two-register (R^I/R_I) datapath that correctly reproduces the real addition round-trip. That's a solid, tested foundation for arithmetic.
+
+What's missing, roughly in order of how much it unlocks:
+
+RIII + the Complement Gates. Right now record() takes raw digit arrays as arguments instead of reading from an actual register — there's no RIII object, and no chassis modeling the x / complement-of-x / 0 selection. This is small and fully documented (we already found the exact mechanism: bitwise complement + carry_in=1). Building it turns "Record" from a function call into a real instruction operating on real machine state, and completes subtraction, which the Adder already secretly supports.
+General Shift instructions + the RI/RII interconnect (Figures 10/11 — the end-around wiring we read but haven't built). This is the natural follow-on since it reuses ShiftUp/ShiftDownLeft/ShiftDownRight directly, and it's a hard prerequisite for multiplication and division, which work by shifting RI and RII together.
+RII + the Shift Counter + multiplication/division. Bigger: multi-step, iterative, driven by a counter we haven't modeled, with at least one documented exception in the terminal steps that'll need care.
+Main Control / instruction decode. The layer that reads an order and decides which cycles to run. Deliberately last among the arithmetic pieces — it doesn't have much to orchestrate until 1–3 exist, and it also depends on Memory existing, which is its own large subsystem (we've read the Williams Memory pulser chain and Discriminator sections but built nothing there yet).
+Williams Memory, then Drum/IBM I/O — the latter deferred by our own earlier agreement.
