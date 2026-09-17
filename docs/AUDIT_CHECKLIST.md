@@ -28,6 +28,7 @@ Legend for status: `?` not yet checked · `OK` matches · `DIFF` deviates ·
 | N6 | Absolute-value variants: a "monitor" decides from the sign of the number in R³ whether the number or its complement is passed. Digit 4 (#/Abs) and digit 5 (+/−) affect only the Complement Gate setting, not order timing. | p. 26, p. 180 | OK |
 | N7 | Digit Resolver drives the RI Green gates. Green gates transmit 0s only, so Rᴵ (upper RI) must be Red-cleared to 1s before the Green gate opens. | p. 60, p. 81, p. 140 | OK |
 | N8 | Carry Delay: the Green gate (recording the sum) occurs about 15 µs after the add is initiated, because of the imposed Carry Delay (chassis "Del", Dwg. A-1455). This is the one timing figure taken from the April 1954 report. | Apr. 1954 p. I-31; chassis list | OK |
+| N9 | Adder ripple (1949 measurement): carry propagation ≈6 µs through 40 stages, carry collapse ≈5 µs, ≈1 µs to set the digit gates. The 15 µs of N8 is therefore an engineered margin over the ripple, not the ripple itself. Not currently modelled per stage; the combinational adder plus the Carry Delay is an acceptable abstraction as long as the Green Gate never samples before ≈6 µs. | 1949 report p. 30 (`extracts_1949_1954_notes.md`) | OK (abstracted) |
 
 ## R. Registers, gates and shifting
 
@@ -47,6 +48,7 @@ Legend for status: `?` not yet checked · `OK` matches · `DIFF` deviates ·
 | R12 | The Accept/Reject choice (Adder path vs direct Yellow path) for every order is made by the Accept-Reject Selector (Dwg. O-1463); the Left/Right choice of the second half cycle by the LR chassis, which also selects Yellow vs Green clear of R₁. | p. 71–73, Fig. 12 | DIFF (finding 3: no Reject path in division) |
 | R13 | The R₁ Clear Selector receives "↓ at sync" and "C/H" from Main Control: the pre-clear of R₁ to 0 for "clear" orders happens at the sync (Up) time, before the Memory phase completes. | Fig. 12 labels; Fig. XII digit 8 | NOT BUILT |
 | R14 | Physical clear: a clear bus must stay below +70 v for ≈1 µs. Super-toggles switch in half the ordinary toggle time. | p. 54 | NOT BUILT |
+| R15 | Register operation (1949 measurement): each half of a shift (gate up, gate back down displaced) can safely be done in 1.5 µs with no spacing, so a one-place shift of the registers alone takes 3 µs. Consistent with, and a lower bound on, the ≈6 µs chain cycle of S2. | 1949 report pp. 31–32 | OK |
 
 ## S. Gate-Clear Sequencing Chain and Shift Counter (arithmetic timing)
 
@@ -86,6 +88,8 @@ Legend for status: `?` not yet checked · `OK` matches · `DIFF` deviates ·
 | M6 | End state, no round-off, clear case: R₁ = c₀..c₃₉; R₂ = (1 − b₀), c₄₀, …, c₇₈ where ab = c₀…c₇₈ (79 digits) and b₀ is the multiplicand sign; R³ = b. Hence R₂ has been shifted 40 times and its 2⁰ receives the complement of the multiplicand sign on the last shift (Fig. 10 shows a "special gate from 2⁰ column of R³ for multiplication" on the Black-gate path), while R₁ ends aligned after net 39 right shifts. | p. 38, Fig. 10 | DIFF (finding 5) |
 | M7 | Round-off (0.10): a 1 is added at 2⁻⁴⁰ to the 79-digit product after all carries, then R₁ keeps 39 digits. End: R₁ = γ₀..γ₃₉, R₂ = (1 − b₀), (c₄₀ + 1), c₄₁, …, c₇₈ with the whole 79-digit number increased by 2⁻⁴⁰ (carry into R₁ when c₄₀ = 1). | p. 30, p. 38 | NOT BUILT |
 | M8 | ASSUMED: the text does not say how the 40th (terminal) cycle leaves R₁ un-shifted while R₂ shifts (p. 27 only says one terminal step is an exception to "RI and RII shift together"). Chassis UnX ("end correction for multiplication"), X1-2 ("multiplication control"), Dwg. B-1450 ("Multiplication Terminate") and A-1486 ("Multiplication Variants") hold the answer and are not in the docs. Whatever the code does here is an assumption; it must reproduce M6/M7 and the 40-count. | p. 27, chassis list, drawings list | ASSUMED, untimed (finding 7) |
+| M9 | Round-off oracle: a small negative product (e.g. −2⁻⁴⁵) with round-off must leave R₁ = 0, which requires the 2⁻⁴⁰ digit to be added to the full 79-digit product with the carry propagating into R₁ before truncation. | Apr. 1954 Appendix, test 10 | NOT BUILT (M7) |
+| M10 | The multiplication step is an Accept/Reject choice per multiplier digit in the machine's own test vocabulary ("Alternating Accept-Reject, i.e. multiplier alternates zeros and ones"). | Apr. 1954 Appendix, test 11 | DIFF (finding 2) |
 
 ## D. Division (0.11)
 
@@ -156,6 +160,7 @@ Legend for status: `?` not yet checked · `OK` matches · `DIFF` deviates ·
 | X9 | The markdown duplicates 0.5 and 0.6 (pp. 34–35). Harmless. |
 | X10 | The mechanism of the terminal multiplication cycle (M8) and of the round-off carry path (chassis "RII Op", "CyIA/CyIB": 2⁻³⁹ R₂ input and carry) is in drawings not included. Any gate-level implementation is an assumption. |
 | X11 | Figs. 27 and 28 (Local Control timing charts) are scanned too coarsely to read edge times; use the textual sequence W5 and the pulse table W3. |
+| X12 | The 1949 Fifth Interim Report extract (adder and register tests) and the April 1954 report (whose engineering part covers only I/O, drum, CRT testing and maintenance, per its table of contents) contain nothing on the terminal multiplication cycle. M8 stays an assumption unless Part II drawings or the 1949–51 interim reports on the multiplication control are found. See `extracts_1949_1954_notes.md`. |
 
 ---
 
