@@ -4,8 +4,8 @@ test_register.py
 Tests for HalfRegister and its four gate transfers.
 """
 
-from event_engine import EventQueue, EventLog
-from register import HalfRegister, WIDTH
+from iasmachine.event_engine import EventQueue, EventLog
+from iasmachine.register import HalfRegister, WIDTH
 
 
 def make_pair():
@@ -120,7 +120,7 @@ def test_full_addition_round_trip_matches_adder_sum():
     """The key correctness property from the source: after the full
     Green -> Red -> Yellow -> Black round trip, R_I holds exactly the
     Adder's sum, for every position 0..39, with no off-by-one drift."""
-    from adder import Adder40
+    from iasmachine.adder import Adder40
 
     engine, log, upper, lower = make_pair()
     adder = Adder40()

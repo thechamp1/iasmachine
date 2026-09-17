@@ -7,8 +7,8 @@ per Jan 1954 report pp.141-142) and to check the Carry Delay wiring for
 the Record branch.
 """
 
-from event_engine import EventQueue, EventLog
-from sequencing_chain import SequencingChain, FEEDBACK_HOP_DELAY_US, CARRY_DELAY_US
+from iasmachine.event_engine import EventQueue, EventLog
+from iasmachine.sequencing_chain import SequencingChain, FEEDBACK_HOP_DELAY_US, CARRY_DELAY_US
 
 
 def make_chain():

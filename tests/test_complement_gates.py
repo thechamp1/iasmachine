@@ -2,7 +2,7 @@
 test_complement_gates.py
 """
 
-from complement_gates import ComplementGates, PASS, COMPLEMENT, ZERO
+from iasmachine.complement_gates import ComplementGates, PASS, COMPLEMENT, ZERO
 
 
 def digits_of(value, width=40):
@@ -45,7 +45,7 @@ def test_unknown_mode_rejected():
 def test_subtraction_via_adder_matches_ordinary_arithmetic():
     """The actual point of this module: x - y should come out right
     when routed through the Adder exactly as the source describes."""
-    from adder import Adder40
+    from iasmachine.adder import Adder40
 
     adder = Adder40()
     gates = ComplementGates()

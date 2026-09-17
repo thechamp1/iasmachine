@@ -10,7 +10,7 @@ taken care of in the Adder") but never re-derives it for a multi-stage
 case, so it's worth checking explicitly here.
 """
 
-from adder import Adder40, TRUTH_TABLE, STAGES
+from iasmachine.adder import Adder40, TRUTH_TABLE, STAGES
 
 
 def test_truth_table_matches_source_rows_exactly():

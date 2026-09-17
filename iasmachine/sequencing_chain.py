@@ -61,7 +61,7 @@ SOURCING NOTES for the delay constants:
     Down Left and Shift Down Right (the second-half pair).
 """
 
-from event_engine import EventQueue, EventLog, Signal
+from iasmachine.event_engine import EventQueue, EventLog, Signal
 
 FEEDBACK_HOP_DELAY_US = 1.5    # documented, Jan54 report pp.148-149
 CARRY_DELAY_US = 15.0          # documented (as an effect), Apr54 report -- see docstring

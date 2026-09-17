@@ -8,8 +8,8 @@ Integration tests for the ArithmeticUnit, covering both:
     subtract_absolute_value) that read from actual RI/RIII state.
 """
 
-from arithmetic_unit import ArithmeticUnit
-from sequencing_chain import CARRY_DELAY_US, FEEDBACK_HOP_DELAY_US
+from iasmachine.arithmetic_unit import ArithmeticUnit
+from iasmachine.sequencing_chain import CARRY_DELAY_US, FEEDBACK_HOP_DELAY_US
 from fractions import Fraction
 import random
 

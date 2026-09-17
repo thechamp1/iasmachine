@@ -48,12 +48,12 @@ STILL NOT MODELED, flagged rather than silently skipped:
     order selects) -- the caller picks directly for now.
 """
 
-from event_engine import EventQueue, EventLog
-from adder import Adder40
-from sequencing_chain import SequencingChain
-from register import HalfRegister, FlatRegister
-from complement_gates import ComplementGates, PASS, COMPLEMENT, ZERO
-from shift_counter import ShiftCounter
+from iasmachine.event_engine import EventQueue, EventLog
+from iasmachine.adder import Adder40
+from iasmachine.sequencing_chain import SequencingChain
+from iasmachine.register import HalfRegister, FlatRegister
+from iasmachine.complement_gates import ComplementGates, PASS, COMPLEMENT, ZERO
+from iasmachine.shift_counter import ShiftCounter
 
 
 class ArithmeticUnit:

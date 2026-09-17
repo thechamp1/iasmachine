@@ -7,8 +7,9 @@ as shipped. Findings are ordered by how much they matter for a gate-by-gate
 model; each has a reproduction where one was run.
 
 Files are referenced as `primitives/`, `units/` and `au/` for the three
-directories `Simulation primitives`, `register-adder-complement gates-shift
-counter` and `Other instance's arithmetic unit`.
+directories the code was delivered in. Since the restructure they all live in
+`iasmachine/` (tests in `tests/`); the delivered layout is preserved at git
+tag `baseline`.
 
 ---
 
