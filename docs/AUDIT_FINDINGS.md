@@ -126,14 +126,20 @@ combinational delay is modelled as 0, but the control loop of Fig. VI (chain
 gate events and carry no time. Acceptable as a placeholder, but the audit
 trail (the event log) does not show them.
 
-## 11. NOTE: the Record half-cycle keeps Red Clear asserted for the whole 15 µs (N8, S2)
+## 11. DIFF: the chassis-5 toggle flips at 15 µs in the Record branch; by the trace's own mechanism it flips at ≈1.5 µs (N8, S2, S2a)
 
 `sequencing_chain.py` models the Carry Delay as the first hop of the Record
 half: Red Clear asserted at t = 0, chassis-5 toggle and Green Gate at 15 µs.
 The April 1954 text only says the Green gate occurs about 15 µs after the add
-is initiated. Whether the clear itself lasts 15 µs or terminates at 1.5 µs
-with the gate command held off is not documented. Elapsed time is right either
-way; flagged as an assumption, which the module's docstring already does.
+is initiated. But the chassis toggles are cleared by the same clear buses as
+the register toggles (p. 147–148), and a clear takes ≈1 µs (p. 54), so the
+chassis-5 toggle flips and the Red Clear terminates ≈1.5 µs after initiation
+in the Record branch exactly as the chassis-1 toggle does in the Black Clear
+branch. The Carry Delay therefore lies between clear termination and Green
+Gate enabling. Elapsed time per cycle is unchanged; the toggle time and the
+clear-pulse width are wrong, and `test_sequencing_chain.py` asserts the
+wrong toggle time (15.0). Upgraded from NOTE to DIFF after the second
+review (section 15).
 
 ## 12. NOTE: comment claims a source inconsistency that is not one
 
@@ -187,3 +193,27 @@ Counter, Local Control (all O and W items).
    free-running chain (needed before Main Control exists).
 5. Finding 10: turn the end-around and zero-fill into gate actions inside
    the chain's Black/Red gate events.
+
+---
+
+## 15. Second review of the primitives (event_engine.py, sequencing_chain.py)
+
+A separate opinion on the two primitive files was checked claim by claim
+against the passages it cites. Verdict per claim:
+
+| Claim | Verdict | Evidence |
+|---|---|---|
+| 1. Chain free-runs under a Counter Stop level; model is one-shot with no termination | Confirmed | p. 142 ("self-perpetuating", "serves to initiate and to terminate"), p. 143–146 (Counter Stop low holds grid 6 of T₄₁ below cut-off, both halves off), p. 152 ("ready for another cycle"). Stop at the cycle boundary is the natural reading; the report does not say at which point in the cycle the counter's pulse pair completes. Added as S1a. |
+| 2. First-half choice must be sampled live; second-half choice is constant per order | Confirmed with one correction | Accept/Reject is chosen by the Accept-Reject Selector "for all orders" (p. 73) from 2⁻³⁹R₂ (p. 147) or the trial result. The second-half choice is constant only for × and ÷ (p. 151); for the additive orders it alternates left, right (p. 25; the 0.23 formula). S3 amended. |
+| 3. Carry delay is on the wrong hop; Red Clear should end at ≈1.5 µs | Confirmed | Chassis toggles sit on the clear buses (p. 147–148); clear takes ≈1 µs (p. 54). The exact insertion point of the delay unit is inferred, not stated. Finding 11 upgraded to DIFF; S2a added. |
+| 4. Carry Delay Unit is in the 1952 chassis list | Confirmed | Chassis "Del", Dwg. A-1455. `adder.py` already cites it; `sequencing_chain.py` does not. |
+| 5. A distinct start signal exists (M→R³ Gate / R₂→R³ Gate) | Confirmed | p. 171, p. 173, Fig. III text, Fig. VI "START". Already S4. How it combines with Counter Stop inside the chain is not described. |
+| 6. Chain drives RII too; single `active_line` shows one RI operation | Confirmed for the chain module; overstated for the system | p. 142 (outputs to RI and RII), Table III′. The delivered `arithmetic_unit.py` already drives RII from the same line under a flag, which is behaviourally the Yes/No enable of Fig. 13. |
+| 7. No hook for the RI → Shift Counter pulse pair | Confirmed | p. 171, p. 173, Fig. VI "STEP", Fig. 29(b). S6 amended. |
+| 8. Engine: no cancellation, synchronous watchers, float time | Confirmed as engineering observations | Not a documentation item. Float time is exact today (all delays are multiples of 0.5 µs) but fragile. |
+| 9. Docstring slips | Partly | "Counter Stop pulse" is a slip (it is a level). The page numbers follow the transcription's PDF-page convention, so they are not a slip. DWG 1287 in the text vs C-1449 in the lists: both are in the report; 1287 is presumably the earlier drawing number. |
+
+Net effect on the correction plan: finding 11 joins the chain rewrite in
+step 4 (free-running chain stopped by Counter Stop, live Accept/Reject
+sampling, toggle flip at 1.5 µs with the Green Gate delayed to 15 µs, a
+counter feed per cycle). Nothing in the second opinion changes steps 1 to 3.
